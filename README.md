@@ -183,4 +183,4 @@ To determine the actual on-screen position the user intended to press, a transfo
 A more in-depth explanation of the procedure can be found [here](https://www.maximintegrated.com/en/design/technical-documents/app-notes/5/5296.html).
 
 ## License
-This work is licensed under the MIT License. Details can be found in the license file.
+This work is licensed under the MIT License. Details can be found in the [license file](https://github.com/jakpaul/lvgl_touch_calibration/blob/master/LICENSE.md).
