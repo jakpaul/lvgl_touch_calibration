@@ -4,6 +4,8 @@ This repository aims to provide a simple, ready-to-embed component for performin
 
 The calibration process corrects for panel misalignment, scale and rotation.
 
+![Calibration screen preview](https://github.com/jakpaul/lvgl_touch_calibration/blob/master/preview.gif "Calibration screen preview")
+
 ## Calibration Sequence
 When the `lv_tc_screen` has been loaded and `lv_tc_screen_start(...)` is called, the user is prompted to touch the screen in three different locations, one by one. Once this is done, the system allows the user to check the calibration results (by showing a cursor at any position the user presses). The calibration is then either restarted or accepted.
 
