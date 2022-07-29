@@ -19,6 +19,7 @@ This section documents how to use this system in an LVGL project. Note that you 
 //...
 
 #include "lv_tc.h"
+#include "lv_tc_screen.h"
 
 void init() {
     //...
