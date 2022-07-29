@@ -36,19 +36,20 @@ extern const lv_obj_class_t lv_tc_screen_class;
  **********************/
 
 /**
- * Create a touch calibration screen
+ * Create a touch calibration screen.
  * @returns a pointer to the newly created screen (lv_obj_t*)
  */
 lv_obj_t* lv_tc_screen_create();
 
 /**
- * Set the points on screen to perform the calibration with
+ * Set the points on screen to perform the calibration with.
  * @param scrPoints a pointer to the first element of an array holding the three new points
  */
 void lv_tc_screen_set_points(lv_obj_t* screenObj, lv_point_t *scrPoints);
 
 /**
- * Start the calibration process
+ * Start the calibration process.
+ * This function can also be used to restart an already ongoing calibration process.
  * @param screenObj a pointer to the calibration screen (lv_obj_t*)
  */
 void lv_tc_screen_start(lv_obj_t* screenObj);

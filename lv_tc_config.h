@@ -4,9 +4,10 @@
 extern "C" {
 #endif
 
-/*********************
- *      DEFINES
- *********************/
+/*
+    This is the configuration file for the touch calibration system.
+    Change the defines below to match your application
+*/
 
 #define LV_TC_START_MSG                 "Precisely touch the cursors (using a touch pen) to perform the calibration."
 #define LV_TC_READY_MSG                 "Calibration completed. You can check it by moving the cursor around on the screen."
