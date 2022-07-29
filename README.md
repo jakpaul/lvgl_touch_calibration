@@ -12,6 +12,7 @@ The results can be written to non-volatile storage (NVS). They can then be resto
 This repo contains some examplary functions for the ESP32 (on top of the [ESP32 NVS Library](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/nvs_flash.html)).
 
 ## Usage
+Clone this this repo and place all its contents in your project.
 ### Firmware setup
 This section documents how to use this system in an LVGL project. Note that you have to **replace** the touch panel driver if there already is one in your code. Place this code in your LVGL initialization:
 ```c
