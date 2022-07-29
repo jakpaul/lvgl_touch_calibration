@@ -4,7 +4,7 @@ This repository aims to provide a simple, ready-to-embed component for performin
 
 The calibration process corrects for panel misalignment, scale and rotation.
 
-## Performing the Calibration Sequence
+## Calibration Sequence
 When the `lv_tc_screen` has been loaded and `lv_tc_screen_start(...)` is called, the user is prompted to touch the screen in three different locations, one by one. Once this is done, the system allows the user to check the calibration results (by showing a cursor at any position the user presses). The calibration is then either restarted or accepted.
 
 The results can be written to non-volatile storage (NVS). They can then be restored after a reset, so that no recalibration is required. System-specific functions for this need to be provided. 
@@ -13,8 +13,10 @@ This repo contains some examplary functions for the ESP32 (on top of the [ESP32 
 
 ## Usage
 ### Firmware setup
-This section documents how to use this system in an LVGL project. Note that you have to **replace** the touch panel driver if it exists already. Place this code in your LVGL initialization:
+This section documents how to use this system in an LVGL project. Note that you have to **replace** the touch panel driver if there already is one in your code. Place this code in your LVGL initialization:
 ```c
+//...
+
 #include "lv_tc.h"
 
 void init() {
@@ -72,6 +74,8 @@ void init() {
 
     //...
 }
+
+//...
 ```
 
 The functions above (that you have to implement yourself) have the following signatures:
@@ -135,20 +139,22 @@ bool your_nvs_init_and_check() {
 
 To use the included NVS functions for the ESP32 do:
 ```c
+//...
+
 #include "esp_nvs_tc.h"
 
 void init() {
     //...
 
     /*
-        Register a calibration coefficients save callback.
+        Register the ESP32 NVS calibration coefficients save callback.
     */
     lv_tc_register_coeff_save_cb(esp_nvs_tc_coeff_save_cb);
 
     //...
 
     /*
-        Init NVS and check for existing calibration data.
+        Init ESP32 NVS and check for existing calibration data.
     */
     if(esp_nvs_tc_coeff_init()) {
         /*
@@ -166,17 +172,19 @@ void init() {
 
     //...
 }
+
+//...
 ```
 
 ### Configuration
 A couple of configuration options for the system are available in `lv_tc_config.h`:
-- The points on the screen that are to pressed during calibration. **You will need to change these to suit the resolution of your screen.**
+- The positions of the points on the screen that are to be pressed during calibration. **You will need to change these to suit the resolution of your screen.**
 - The text on the UI
 
 That's it.
 
 ## Background
-Screens with resistive touch usually come with a slight misalignment of the two layers. This means that simply reading the position of the user's touch from the touch controller does not yield the coordinates of the pixel below.
+Screens with resistive touch usually come with a slight misalignment of the display and touch layers. This means that simply reading the position of the user's touch from the touch controller does not yield the coordinates of the pixel below.
 
 To determine the actual on-screen position the user intended to press, a transformation of the touch controller output is required. By prompting the user to touch the screen at known locations, the transformation can be calculated.
 
