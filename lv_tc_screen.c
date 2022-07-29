@@ -6,8 +6,8 @@
 
 #include "math.h"
 
+#include "lv_tc.h"
 #include "lv_tc_config.h"
-#include "img/lv_tc_indicator_img.c"
 
 
 /*********************
@@ -94,6 +94,11 @@ static void lv_tc_screen_constructor(const lv_obj_class_t *class_p, lv_obj_t *ob
     
     lv_point_t points[3] = LV_TC_SCREEN_DEFAULT_POINTS;
     lv_tc_screen_set_points(obj, points);
+
+    lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+
+
+    LV_IMG_DECLARE(lv_tc_indicator_img);
 
     tCScreenObj->indicatorObj = lv_img_create(obj);
     lv_img_set_src(tCScreenObj->indicatorObj, &lv_tc_indicator_img);

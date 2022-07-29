@@ -10,7 +10,6 @@ extern "C" {
 
 #include "lvgl.h"
 
-#include "lv_tc.h"
 
 /**********************
  *      TYPEDEFS
