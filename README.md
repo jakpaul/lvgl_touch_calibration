@@ -2,7 +2,7 @@
 
 This repository aims to provide a simple, ready-to-embed component for performing calibration of a resistive touch panel in an [LVGL](https://lvgl.io/) project.
 
-The calibration process corrects for panel misalignment, scale and rotation.
+The calibration process corrects for **panel misalignment, scale and rotation**. It has been tested to work reliably with LVGL 8.3.0 on a 480×800 pixels LCD with an XPT2046 touch controller.
 
 ![Calibration screen preview](https://github.com/jakpaul/lvgl_touch_calibration/blob/master/preview.gif "Calibration screen preview")
 
@@ -182,7 +182,12 @@ void init() {
 
 ### Configuration
 A couple of configuration options for the system are available in `lv_tc_config.h`:
-- The positions of the points on the screen that are to be pressed during calibration. **You will need to change these to suit the resolution of your screen.**
+- The positions of the points on the screen that are to be pressed during calibration. **You will need to change these to suit the resolution of your screen.** 
+
+    Place them according to these guidelines: All three points should
+    - not be on a straight line. If the points do not form a triangle, the calibration will not work.
+    - ideally cover the largest possible area on the screen. This minimizes any error in the calibration process.
+    - not be too close to the edges of the screen. Here, the resistive touchscreen does not perform as accurately. This would cause the calibration results to be unreliable. For my screen setup, keeping a margin of roughly 15% worked well.
 - The text on the UI
 
 That's it.
