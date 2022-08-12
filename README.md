@@ -192,9 +192,7 @@ void init() {
 
 ### Configuration
 A couple of configuration options for the system are available in `lv_tc_config.h`:
-- The text on the UI.
-
-    (`LV_TC_START_MSG`, `LV_TC_READY_MSG`, `LV_TC_RECALIBRATE_TXT`, `LV_TC_ACCEPT_TXT`, `LV_TC_RECALIBRATE_TIMEOUT_FORMAT`)
+- The text on the UI. (`LV_TC_START_MSG`, `LV_TC_READY_MSG`, `LV_TC_RECALIBRATE_TXT`, `LV_TC_ACCEPT_TXT`, `LV_TC_RECALIBRATE_TIMEOUT_FORMAT`)
 
 - The positions of the points on the screen that are to be pressed during calibration. 
 
@@ -206,9 +204,7 @@ A couple of configuration options for the system are available in `lv_tc_config.
     - ideally cover the largest possible area on the screen. This minimizes any error in the calibration process.
     - not be too close to the edges of the screen. Here, the resistive touchscreen does not perform as accurately. This would cause the calibration results to be unreliable. For my screen setup, keeping a margin of roughly 15% worked well.
 
-- The timeout for automatically restarting the calibration in seconds (default is 30). Set the option to 0 to not have the calibration time out.
-
-    (`LV_TC_RECALIB_TIMEOUT_S`)
+- The timeout for automatically restarting the calibration in seconds (default is 30). Set the option to 0 to not have the calibration time out. (`LV_TC_RECALIB_TIMEOUT_S`)
 
 That's it.
 
