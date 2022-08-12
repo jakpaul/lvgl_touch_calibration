@@ -21,7 +21,7 @@ static void lv_tc_indev_drv_read_cb(lv_indev_drv_t *indevDrv, lv_indev_data_t *d
 static lv_tc_coeff_t calibResult = {false, 0, 0, 0, 0, 0, 0};
 
 static lv_obj_t *registeredTCScreen = NULL;
-static void (*registeredInputCb)(lv_obj_t *screenObj, lv_indev_data_t *data) = NULL;
+static bool (*registeredInputCb)(lv_obj_t *screenObj, lv_indev_data_t *data) = NULL;
 static void (*registeredSaveCb)(lv_tc_coeff_t coeff) = NULL;
 
 
@@ -36,7 +36,7 @@ void lv_tc_indev_drv_init(lv_indev_drv_t *indevDrv, void (*readCb)(lv_indev_drv_
     indevDrv->user_data = readCb;
 }
 
-void _lv_tc_register_input_cb(lv_obj_t *screenObj, void (*inputCb)(lv_obj_t *screenObj, lv_indev_data_t *data)) {
+void _lv_tc_register_input_cb(lv_obj_t *screenObj, bool (*inputCb)(lv_obj_t *screenObj, lv_indev_data_t *data)) {
     registeredTCScreen = screenObj;
     registeredInputCb = inputCb;
 }
@@ -142,7 +142,14 @@ static void lv_tc_indev_drv_read_cb(lv_indev_drv_t *indevDrv, lv_indev_data_t *d
     ((void (*)(lv_indev_drv_t*, lv_indev_data_t*))indevDrv->user_data)(indevDrv, data);
 
     if(registeredTCScreen && registeredInputCb && registeredTCScreen == lv_scr_act()) {
-        registeredInputCb(registeredTCScreen, data);
+        if(!registeredInputCb(registeredTCScreen, data)) {
+            //Override state and point if the input has been handled by the registered calibration screen
+            data->state = LV_INDEV_STATE_RELEASED;
+            lv_point_t point = {0, 0};
+            data->point = point;
+
+            return;
+        }
     }
 
     data->point = _lv_tc_transform_point_indev(data);

@@ -16,15 +16,17 @@ extern "C" {
  **********************/
 
 typedef struct {
-    lv_obj_t screenObj;
-    lv_obj_t *indicatorObj;
-    lv_obj_t *msgLabelObj;
-    lv_obj_t *recalibrateBtnObj;
-    lv_obj_t *acceptBtnObj;
-    bool inputEnabled;
-    lv_point_t scrPoints[3];
-    lv_point_t tchPoints[3];
-    uint8_t currentStep;
+    lv_obj_t screenObj;             /* The screen object */
+    lv_obj_t *indicatorObj;         /* The crosshair image object */
+    lv_obj_t *msgLabelObj;          /* The message label object */
+    lv_obj_t *recalibrateBtnObj;    /* The recalibration button object */
+    lv_obj_t *acceptBtnObj;         /* The confirmation button object */
+    bool inputEnabled;              /* A flag which determines whether the screen accepts input from the touch driver.
+                                       Makes sure pressing the crosshair is only handled once until releasing */
+    lv_point_t scrPoints[3];        /* The points to be pressed (in the coordinate space of the screen) */
+    lv_point_t tchPoints[3];        /* The touched points during the current calibration (in the coordinate space of the touch driver) */
+    uint8_t currentStep;            /* The current calibration step */
+    lv_timer_t *recalibrateTimer;   /* The timer for automatic recalibration */
 } lv_tc_screen_t;
 
 extern const lv_obj_class_t lv_tc_screen_class;
@@ -42,16 +44,17 @@ lv_obj_t* lv_tc_screen_create();
 
 /**
  * Set the points on screen to perform the calibration with.
+ * @param screenObj a pointer to the calibration screen (lv_obj_t*)
  * @param scrPoints a pointer to the first element of an array holding the three new points
  */
-void lv_tc_screen_set_points(lv_obj_t* screenObj, lv_point_t *scrPoints);
+void lv_tc_screen_set_points(lv_obj_t *screenObj, lv_point_t *scrPoints);
 
 /**
  * Start the calibration process.
  * This function can also be used to restart an already ongoing calibration process.
  * @param screenObj a pointer to the calibration screen (lv_obj_t*)
  */
-void lv_tc_screen_start(lv_obj_t* screenObj);
+void lv_tc_screen_start(lv_obj_t *screenObj);
 
 
 

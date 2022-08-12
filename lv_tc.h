@@ -51,7 +51,7 @@ void lv_tc_indev_drv_init(lv_indev_drv_t *indevDrv, void (*readCb)(struct _lv_in
  * @param screenObj pointer to the screen object
  * @param inputCb function pointer to handle the input
  */
-void _lv_tc_register_input_cb(lv_obj_t *screenObj, void (*inputCb)(lv_obj_t *screenObj, lv_indev_data_t *data));
+void _lv_tc_register_input_cb(lv_obj_t *screenObj, bool (*inputCb)(lv_obj_t *screenObj, lv_indev_data_t *data));
 
 
 /**
