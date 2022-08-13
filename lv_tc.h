@@ -29,10 +29,6 @@ typedef struct {
     lv_tc_val_t f;
 } lv_tc_coeff_t;
 
-typedef enum {
-    TC_MODE_THREE_POINTS
-} lv_tc_mode_t;
-
 
 /**********************
  * GLOBAL PROTOTYPES
@@ -85,9 +81,8 @@ void lv_tc_save_coeff();
  * @param scrP pointer to the first element of an array containing the screen points
  * @param tchP pointer to the first element of an array containing the touch panel points
  * @param save select whether to save the coefficients or just to keep them in volatile storage
- * @param mode the calibration mode (lv_tc_mode_t)
  */
-void lv_tc_compute_coeff(lv_point_t *scrP, lv_point_t *tchP, bool save, lv_tc_mode_t mode);
+void lv_tc_compute_coeff(lv_point_t *scrP, lv_point_t *tchP, bool save);
 
 
 /**

@@ -63,7 +63,7 @@ void lv_tc_save_coeff() {
     }
 }
 
-void lv_tc_compute_coeff(lv_point_t *scrP, lv_point_t *tchP, bool save, lv_tc_mode_t mode) {   //The computation is explained here: https://www.maximintegrated.com/en/design/technical-documents/app-notes/5/5296.html
+void lv_tc_compute_coeff(lv_point_t *scrP, lv_point_t *tchP, bool save) {   //The computation is explained here: https://www.maximintegrated.com/en/design/technical-documents/app-notes/5/5296.html
     const lv_tc_val_t divisor = (
           (lv_tc_val_t)tchP[0].x * ((lv_tc_val_t)tchP[2].y - (lv_tc_val_t)tchP[1].y)
         - (lv_tc_val_t)tchP[1].x * (lv_tc_val_t)tchP[2].y
@@ -116,6 +116,7 @@ lv_point_t _lv_tc_transform_point_indev(lv_indev_data_t *data) {
     if(data->state == LV_INDEV_STATE_PRESSED) {
         return lv_tc_transform_point(data->point);
     } else {
+        //Reject invalid points if the touch panel is in released state
         lv_point_t point = {0, 0};
         return point;
     }
@@ -139,8 +140,10 @@ lv_point_t lv_tc_transform_point(lv_point_t point) {
 static void lv_tc_indev_drv_read_cb(lv_indev_drv_t *indevDrv, lv_indev_data_t *data) {
     if(!indevDrv->user_data) return;
 
+    //Call the actual indev read callback
     ((void (*)(lv_indev_drv_t*, lv_indev_data_t*))indevDrv->user_data)(indevDrv, data);
 
+    //Pass the results to an ongoing calibration if there is one
     if(registeredTCScreen && registeredInputCb && registeredTCScreen == lv_scr_act()) {
         if(!registeredInputCb(registeredTCScreen, data)) {
             //Override state and point if the input has been handled by the registered calibration screen

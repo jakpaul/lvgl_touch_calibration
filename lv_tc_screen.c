@@ -29,7 +29,7 @@ static void lv_tc_screen_auto_set_points(lv_obj_t *screenObj);
 
 static bool lv_tc_screen_input_cb(lv_obj_t *screenObj, lv_indev_data_t *data);
 static void lv_tc_screen_process_input(lv_obj_t *screenObj, lv_point_t tchPoint);
-static void lv_tc_screen_step(lv_obj_t *screenObj, uint8_t step, lv_point_t tchPoint, lv_tc_mode_t mode);
+static void lv_tc_screen_step(lv_obj_t *screenObj, uint8_t step, lv_point_t tchPoint);
 static void lv_tc_screen_set_indicator_pos(lv_obj_t *screenObj, lv_point_t point);
 
 static void lv_tc_screen_finish(lv_obj_t *screenObj);
@@ -86,6 +86,8 @@ void lv_tc_screen_start(lv_obj_t* screenObj) {
 
     lv_point_t point = {0, 0};
     lv_tc_screen_step(screenObj, 0, point, TC_MODE_THREE_POINTS);
+
+    //Register this screen to the calibrated indev driver
     _lv_tc_register_input_cb(screenObj, lv_tc_screen_input_cb);
 }
 
@@ -146,6 +148,7 @@ static void lv_tc_screen_constructor(const lv_obj_class_t *class_p, lv_obj_t *ob
 }
 
 static void lv_tc_screen_auto_set_points(lv_obj_t *screenObj) {
+    //Choose the on-screen calibration points based on the active display driver's resolution
     lv_coord_t marginH = lv_disp_get_default()->driver->hor_res * 0.15;
     lv_coord_t marginV = lv_disp_get_default()->driver->ver_res * 0.15;
     lv_coord_t margin = (marginH < marginV) ? marginH: marginV;
@@ -176,23 +179,28 @@ static void lv_tc_screen_process_input(lv_obj_t* screenObj, lv_point_t tchPoint)
     lv_tc_screen_t *tCScreenObj = (lv_tc_screen_t*)screenObj;
 
     if(tCScreenObj->currentStep < STEP_FINISH) {
+        //Block further input until released
         tCScreenObj->inputEnabled = false;
+        //Go to the next calibration step
         lv_tc_screen_step(screenObj, tCScreenObj->currentStep + 1, tchPoint, TC_MODE_THREE_POINTS);
     } else {
+        //When the calibration is completed, show the cursor at touch position
         lv_tc_screen_set_indicator_pos(screenObj, lv_tc_transform_point(tchPoint));
     }
 }
 
-static void lv_tc_screen_step(lv_obj_t* screenObj, uint8_t step, lv_point_t tchPoint, lv_tc_mode_t mode) {
+static void lv_tc_screen_step(lv_obj_t* screenObj, uint8_t step, lv_point_t tchPoint) {
     lv_tc_screen_t *tCScreenObj = (lv_tc_screen_t*)screenObj;
 
     tCScreenObj->currentStep = step;
 
     if(step > 0) {
+        //Store the touch controller output for the current point
         tCScreenObj->tchPoints[step - 1] = tchPoint;
     }
     if(step == STEP_FINISH) {
-        lv_tc_compute_coeff(tCScreenObj->scrPoints, tCScreenObj->tchPoints, false, mode);
+        //Finish the calibration
+        lv_tc_compute_coeff(tCScreenObj->scrPoints, tCScreenObj->tchPoints, false);
         lv_tc_screen_finish(screenObj);
         return;
     }
@@ -209,6 +217,7 @@ static void lv_tc_screen_set_indicator_pos(lv_obj_t* screenObj, lv_point_t point
 static void lv_tc_screen_finish(lv_obj_t *screenObj) {
     lv_tc_screen_t *tCScreenObj = (lv_tc_screen_t*)screenObj;
 
+    //Update the UI
     lv_label_set_text_static(tCScreenObj->msgLabelObj, LV_TC_READY_MSG);
     lv_obj_clear_flag(tCScreenObj->recalibrateBtnObj, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(tCScreenObj->acceptBtnObj, LV_OBJ_FLAG_HIDDEN);
@@ -220,6 +229,7 @@ static void lv_tc_screen_finish(lv_obj_t *screenObj) {
     lv_obj_set_x(tCScreenObj->acceptBtnObj, lv_pct(53));
 
 
+    //Start the recalibration timeout
     #if LV_TC_RECALIB_TIMEOUT_S
         lv_label_set_text_fmt(lv_obj_get_child(tCScreenObj->recalibrateBtnObj, 0), LV_TC_RECALIBRATE_TXT LV_TC_RECALIBRATE_TIMEOUT_FORMAT, LV_TC_RECALIB_TIMEOUT_S);
 
@@ -231,6 +241,7 @@ static void lv_tc_screen_finish(lv_obj_t *screenObj) {
 static void lv_tc_screen_ready(lv_obj_t *screenObj) {
     lv_tc_screen_t *tCScreenObj = (lv_tc_screen_t*)screenObj;
 
+    //Store the calibration coefficients in NVM
     lv_tc_save_coeff();
 
     if(tCScreenObj->recalibrateTimer) {
@@ -238,6 +249,7 @@ static void lv_tc_screen_ready(lv_obj_t *screenObj) {
         tCScreenObj->recalibrateTimer = NULL;
     }
 
+    //Indicate that the calibration is complete and the screen can be closed
     lv_event_send(screenObj, LV_EVENT_READY, lv_tc_get_coeff());
 }
 
@@ -255,6 +267,7 @@ static void lv_tc_screen_recalibrate_timer(lv_timer_t *timer) {
     lv_tc_screen_t *tCScreenObj = (lv_tc_screen_t*)timer->user_data;
 
     if(timer->repeat_count == 0) {
+        //Restart when timed out
         lv_tc_screen_start(tCScreenObj);
         return;
     }
