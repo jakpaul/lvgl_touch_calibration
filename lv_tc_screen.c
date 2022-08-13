@@ -85,7 +85,7 @@ void lv_tc_screen_start(lv_obj_t* screenObj) {
 
 
     lv_point_t point = {0, 0};
-    lv_tc_screen_step(screenObj, 0, point, TC_MODE_THREE_POINTS);
+    lv_tc_screen_step(screenObj, 0, point);
 
     //Register this screen to the calibrated indev driver
     _lv_tc_register_input_cb(screenObj, lv_tc_screen_input_cb);
@@ -182,7 +182,7 @@ static void lv_tc_screen_process_input(lv_obj_t* screenObj, lv_point_t tchPoint)
         //Block further input until released
         tCScreenObj->inputEnabled = false;
         //Go to the next calibration step
-        lv_tc_screen_step(screenObj, tCScreenObj->currentStep + 1, tchPoint, TC_MODE_THREE_POINTS);
+        lv_tc_screen_step(screenObj, tCScreenObj->currentStep + 1, tchPoint);
     } else {
         //When the calibration is completed, show the cursor at touch position
         lv_tc_screen_set_indicator_pos(screenObj, lv_tc_transform_point(tchPoint));
