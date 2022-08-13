@@ -85,7 +85,7 @@ void lv_tc_screen_start(lv_obj_t* screenObj) {
 
 
     lv_point_t point = {0, 0};
-    lv_tc_screen_step(screenObj, 0, point, TC_MODE_THREE_POINTS);
+    lv_tc_screen_step(screenObj, 0, point);
 
     //Register this screen to the calibrated indev driver
     _lv_tc_register_input_cb(screenObj, lv_tc_screen_input_cb);
