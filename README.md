@@ -2,7 +2,17 @@
 
 This repository aims to provide a simple, ready-to-embed component for performing calibration of a resistive touch panel in an [LVGL](https://lvgl.io/) project.
 
-The calibration process corrects for **panel misalignment, scale and rotation**. It has been tested to work reliably with LVGL 8.3.0 on a 480×800 pixels LCD with an XPT2046 touch controller.
+### Features
+- Corrects for **panel misalignment, scale and rotation**. This means that, as long as the touch controller is working properly, its output range does not matter; no dialing numbers in by hand for prescaling is required.
+- Simple integration: Just a couple of callbacks need to be defined to interface with the calibration component. It handles all the transformation math.
+- Lets the user verify the calibration by showing the touch position after a completed calibration.
+- Recalibration after a timeout: The process always restarts after some given timeout if the results are not accepted. This prevents the device from no longer being controllable via the touchscreen if the user misclicks - since this would result in a faulty calibration.
+- Configurable (see below)
+
+### Possible future improvements
+- Allow setting other calibration modes such as: more points for better accuracy (through averaging)
+
+The system has been tested to work reliably with LVGL 8.3.0 on a 480×800 pixels LCD with an XPT2046 touch controller.
 
 ![Calibration screen preview](https://github.com/jakpaul/lvgl_touch_calibration/blob/master/preview.gif "Calibration screen preview")
 
@@ -182,13 +192,19 @@ void init() {
 
 ### Configuration
 A couple of configuration options for the system are available in `lv_tc_config.h`:
-- The positions of the points on the screen that are to be pressed during calibration. **You will need to change these to suit the resolution of your screen.** 
+- The text on the UI. (`LV_TC_START_MSG`, `LV_TC_READY_MSG`, `LV_TC_RECALIBRATE_TXT`, `LV_TC_ACCEPT_TXT`, `LV_TC_RECALIBRATE_TIMEOUT_FORMAT`)
 
+- The positions of the points on the screen that are to be pressed during calibration. 
+
+    `LV_TC_SCREEN_ENABLE_AUTO_POINTS`: If this is enabled (it is by default), the points are chosen automatically based on your screen resolution. If you want to set them yourself, disable the option.
+
+    The points can then be set with `LV_TC_SCREEN_DEFAULT_POINTS`.
     Place them according to these guidelines: All three points should
     - not be on a straight line. If the points do not form a triangle, the calibration will not work.
     - ideally cover the largest possible area on the screen. This minimizes any error in the calibration process.
     - not be too close to the edges of the screen. Here, the resistive touchscreen does not perform as accurately. This would cause the calibration results to be unreliable. For my screen setup, keeping a margin of roughly 15% worked well.
-- The text on the UI
+
+- The timeout for automatically restarting the calibration in seconds (default is 30). Set the option to 0 to not have the calibration time out. (`LV_TC_RECALIB_TIMEOUT_S`)
 
 That's it.
 
