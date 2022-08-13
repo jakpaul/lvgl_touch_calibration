@@ -182,7 +182,7 @@ static void lv_tc_screen_process_input(lv_obj_t* screenObj, lv_point_t tchPoint)
         //Block further input until released
         tCScreenObj->inputEnabled = false;
         //Go to the next calibration step
-        lv_tc_screen_step(screenObj, tCScreenObj->currentStep + 1, tchPoint, TC_MODE_THREE_POINTS);
+        lv_tc_screen_step(screenObj, tCScreenObj->currentStep + 1, tchPoint);
     } else {
         //When the calibration is completed, show the cursor at touch position
         lv_tc_screen_set_indicator_pos(screenObj, lv_tc_transform_point(tchPoint));
