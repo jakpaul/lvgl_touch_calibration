@@ -22,7 +22,7 @@ extern "C" {
  *      DEFINES
  *********************/
 
-#define ESP_NVS_TC_PARTITION    NVS_DEFAULT_PART_NAME
+#define ESP_NVS_TC_PARTITION    NVS_DEFAULT_PART_NAME       //Defaults to "nvs"
 #define ESP_NVS_TC_NAMESPACE    "touch_calib"
 #define ESP_NVS_TC_KEY          "coeff"
 

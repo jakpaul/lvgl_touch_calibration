@@ -11,7 +11,7 @@
  **********************/
 
 bool esp_nvs_tc_coeff_init() {
-    ESP_ERROR_CHECK(nvs_flash_init_partition(NVS_DEFAULT_PART_NAME));
+    ESP_ERROR_CHECK(nvs_flash_init_partition(ESP_NVS_TC_PARTITION));
 
     nvs_handle_t nVSHandle;
     lv_tc_coeff_t coeff = {false, 0, 0, 0, 0, 0, 0};

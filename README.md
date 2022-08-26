@@ -26,7 +26,9 @@ This repo contains some examplary functions for the ESP32 (on top of the [ESP32 
 ## Usage
 Clone this this repo and place all its contents in your project.
 ### Firmware setup
-This section documents how to use this system in an LVGL project. Note that you have to **replace** the touch panel driver if there already is one in your code. Place this code in your LVGL initialization:
+This section documents how to add touch calibration to an LVGL project: The system provides a custom input device driver for lvgl (see below). Note that you have to **replace** your own driver if there already is one in your code.
+
+Place this code in your LVGL initialization:
 ```c
 //...
 
@@ -40,7 +42,8 @@ void init() {
 
     /*
         Initialize the calibrated touch driver.
-        Sets its type to LV_INDEV_TYPE_POINTER
+        Sets its type to LV_INDEV_TYPE_POINTER,
+        uses its user_data field. DO NOT OVERRIDE
 
         Also provide a read callback to interface with your touch controller!
     */
