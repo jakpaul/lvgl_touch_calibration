@@ -231,7 +231,7 @@ static void lv_tc_screen_finish(lv_obj_t *screenObj) {
 
     //Start the recalibration timeout
     #if LV_TC_RECALIB_TIMEOUT_S
-        lv_label_set_text_fmt(lv_obj_get_child(tCScreenObj->recalibrateBtnObj, 0), LV_TC_RECALIBRATE_TXT LV_TC_RECALIBRATE_TIMEOUT_FORMAT, LV_TC_RECALIB_TIMEOUT_S);
+        lv_label_set_text_fmt(lv_obj_get_child(tCScreenObj->recalibrateBtnObj, 0), LV_TC_RECALIBRATE_TXT LV_TC_RECALIBRATE_TIMEOUT_FORMAT, (int)LV_TC_RECALIB_TIMEOUT_S);
 
         tCScreenObj->recalibrateTimer = lv_timer_create(lv_tc_screen_recalibrate_timer, 1000, screenObj);
         lv_timer_set_repeat_count(tCScreenObj->recalibrateTimer, LV_TC_RECALIB_TIMEOUT_S);
@@ -271,5 +271,5 @@ static void lv_tc_screen_recalibrate_timer(lv_timer_t *timer) {
         lv_tc_screen_start(tCScreenObj);
         return;
     }
-    lv_label_set_text_fmt(lv_obj_get_child(tCScreenObj->recalibrateBtnObj, 0), LV_TC_RECALIBRATE_TXT LV_TC_RECALIBRATE_TIMEOUT_FORMAT, timer->repeat_count);
+    lv_label_set_text_fmt(lv_obj_get_child(tCScreenObj->recalibrateBtnObj, 0), LV_TC_RECALIBRATE_TXT LV_TC_RECALIBRATE_TIMEOUT_FORMAT, (int)timer->repeat_count);
 }
