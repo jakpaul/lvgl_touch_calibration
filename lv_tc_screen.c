@@ -16,7 +16,9 @@
 
 #define MY_CLASS &lv_tc_screen_class
 
-#define STEP_FINISH 3
+#define STEP_INIT 0
+#define STEP_FIRST 1
+#define STEP_FINISH 4
 #define INDICATOR_SIZE 50
 
 /**********************
@@ -30,7 +32,7 @@ static void lv_tc_screen_auto_set_points(lv_obj_t *screenObj);
 static bool lv_tc_screen_input_cb(lv_obj_t *screenObj, lv_indev_data_t *data);
 static void lv_tc_screen_process_input(lv_obj_t *screenObj, lv_point_t tchPoint);
 static void lv_tc_screen_step(lv_obj_t *screenObj, uint8_t step, lv_point_t tchPoint);
-static void lv_tc_screen_set_indicator_pos(lv_obj_t *screenObj, lv_point_t point);
+static void lv_tc_screen_set_indicator_pos(lv_obj_t *screenObj, lv_point_t point, bool visible);
 
 static void lv_tc_screen_finish(lv_obj_t *screenObj);
 static void lv_tc_screen_ready(lv_obj_t *screenObj);
@@ -39,6 +41,7 @@ static void lv_tc_screen_recalibrate_btn_click_cb(lv_event_t *event);
 static void lv_tc_screen_accept_btn_click_cb(lv_event_t *event);
 
 static void lv_tc_screen_recalibrate_timer(lv_timer_t *timer);
+static void lv_tc_screen_start_delay_timer(lv_timer_t *timer);
 
 /**********************
  *  STATIC VARIABLES
@@ -67,7 +70,11 @@ void lv_tc_screen_set_points(lv_obj_t* screenObj, lv_point_t *scrPoints) {
     memcpy(tCScreenObj->scrPoints, scrPoints, sizeof(lv_point_t) * 3);
 }
 
-void lv_tc_screen_start(lv_obj_t* screenObj) {
+void lv_tc_screen_start(lv_obj_t *screenObj) {
+    lv_tc_screen_start_with_config(screenObj, LV_TC_START_DELAY_ENABLED);
+}
+
+void lv_tc_screen_start_with_config(lv_obj_t* screenObj, lv_tc_start_delay_t startDelayEnabled) {
     lv_tc_screen_t *tCScreenObj = (lv_tc_screen_t*)screenObj;
 
     if(tCScreenObj->recalibrateTimer) {
@@ -84,11 +91,22 @@ void lv_tc_screen_start(lv_obj_t* screenObj) {
     lv_obj_align_to(tCScreenObj->acceptBtnObj, tCScreenObj->msgLabelObj, LV_ALIGN_OUT_BOTTOM_MID, 140, 20);
 
 
-    lv_point_t point = {0, 0};
-    lv_tc_screen_step(screenObj, 0, point);
+    #if LV_TC_START_DELAY_MS
+        lv_point_t point = {0, 0};
+        lv_tc_screen_step(screenObj, STEP_INIT, point);
+    #endif
 
     //Register this screen to the calibrated indev driver
     _lv_tc_register_input_cb(screenObj, lv_tc_screen_input_cb);
+
+    //Start the input delay timer (or calibrate immediately)
+    #if LV_TC_START_DELAY_MS
+        tCScreenObj->startDelayTimer = lv_timer_create(lv_tc_screen_start_delay_timer, LV_TC_START_DELAY_MS, screenObj);
+        lv_timer_set_repeat_count(tCScreenObj->startDelayTimer, 1);
+    #else
+        lv_point_t point = {0, 0};
+        lv_tc_screen_step(screenObj, STEP_FIRST, point);
+    #endif
 }
 
 
@@ -101,6 +119,7 @@ static void lv_tc_screen_constructor(const lv_obj_class_t *class_p, lv_obj_t *ob
     lv_tc_screen_t *tCScreenObj = (lv_tc_screen_t*)obj;
 
     tCScreenObj->inputEnabled = true;
+    tCScreenObj->startDelayTimer = NULL;
     tCScreenObj->recalibrateTimer = NULL;
     
     #if LV_TC_SCREEN_ENABLE_AUTO_POINTS
@@ -178,14 +197,16 @@ static bool lv_tc_screen_input_cb(lv_obj_t *screenObj, lv_indev_data_t *data) {
 static void lv_tc_screen_process_input(lv_obj_t* screenObj, lv_point_t tchPoint) {
     lv_tc_screen_t *tCScreenObj = (lv_tc_screen_t*)screenObj;
 
-    if(tCScreenObj->currentStep < STEP_FINISH) {
-        //Block further input until released
-        tCScreenObj->inputEnabled = false;
-        //Go to the next calibration step
-        lv_tc_screen_step(screenObj, tCScreenObj->currentStep + 1, tchPoint);
-    } else {
-        //When the calibration is completed, show the cursor at touch position
-        lv_tc_screen_set_indicator_pos(screenObj, lv_tc_transform_point(tchPoint));
+    if(tCScreenObj->currentStep > STEP_INIT) {
+        if(tCScreenObj->currentStep < STEP_FINISH) {
+            //Block further input until released
+            tCScreenObj->inputEnabled = false;
+            //Go to the next calibration step
+            lv_tc_screen_step(screenObj, tCScreenObj->currentStep + 1, tchPoint);
+        } else {
+            //When the calibration is completed, show the cursor at touch position
+            lv_tc_screen_set_indicator_pos(screenObj, lv_tc_transform_point(tchPoint), true);
+        }
     }
 }
 
@@ -194,9 +215,9 @@ static void lv_tc_screen_step(lv_obj_t* screenObj, uint8_t step, lv_point_t tchP
 
     tCScreenObj->currentStep = step;
 
-    if(step > 0) {
+    if(step > STEP_FIRST) {
         //Store the touch controller output for the current point
-        tCScreenObj->tchPoints[step - 1] = tchPoint;
+        tCScreenObj->tchPoints[step - 2] = tchPoint;
     }
     if(step == STEP_FINISH) {
         //Finish the calibration
@@ -205,13 +226,19 @@ static void lv_tc_screen_step(lv_obj_t* screenObj, uint8_t step, lv_point_t tchP
         return;
     }
 
-    lv_tc_screen_set_indicator_pos(screenObj, tCScreenObj->scrPoints[step]);
+    lv_tc_screen_set_indicator_pos(screenObj, tCScreenObj->scrPoints[step - 1], step > STEP_INIT);
 }
 
-static void lv_tc_screen_set_indicator_pos(lv_obj_t* screenObj, lv_point_t point) {
+static void lv_tc_screen_set_indicator_pos(lv_obj_t* screenObj, lv_point_t point, bool visible) {
     lv_tc_screen_t *tCScreenObj = (lv_tc_screen_t*)screenObj;
 
     lv_obj_set_pos(tCScreenObj->indicatorObj, point.x - INDICATOR_SIZE / 2, point.y - INDICATOR_SIZE / 2);
+    
+    if(visible) {
+        lv_obj_clear_flag(tCScreenObj->indicatorObj, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(tCScreenObj->indicatorObj, LV_OBJ_FLAG_HIDDEN);
+    }
 }
 
 static void lv_tc_screen_finish(lv_obj_t *screenObj) {
@@ -272,4 +299,11 @@ static void lv_tc_screen_recalibrate_timer(lv_timer_t *timer) {
         return;
     }
     lv_label_set_text_fmt(lv_obj_get_child(tCScreenObj->recalibrateBtnObj, 0), LV_TC_RECALIBRATE_TXT LV_TC_RECALIBRATE_TIMEOUT_FORMAT, (int)timer->repeat_count);
+}
+
+static void lv_tc_screen_start_delay_timer(lv_timer_t *timer) {
+    lv_tc_screen_t *tCScreenObj = (lv_tc_screen_t*)timer->user_data;
+
+    lv_point_t point = {0, 0};
+    lv_tc_screen_step(tCScreenObj, STEP_FIRST, point);
 }

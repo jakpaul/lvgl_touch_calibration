@@ -7,6 +7,7 @@ This repository aims to provide a simple, ready-to-embed component for performin
 - Simple integration: Just a couple of callbacks need to be defined to interface with the calibration component. It handles all the transformation math.
 - Lets the user verify the calibration by showing the touch position after a completed calibration.
 - Recalibration after a timeout: The process always restarts after some given timeout if the results are not accepted. This prevents the device from no longer being controllable via the touchscreen if the user misclicks - since this would result in a faulty calibration.
+- **New feature:** Previously, when the calibration was started through touch input, the press would sometimes falsely be registered as the first calibration point. A delay before start of the sequence prevents this.
 - Configurable (see below)
 
 ### Possible future improvements
@@ -206,6 +207,8 @@ A couple of configuration options for the system are available in `lv_tc_config.
     - not be on a straight line. If the points do not form a triangle, the calibration will not work.
     - ideally cover the largest possible area on the screen. This minimizes any error in the calibration process.
     - not be too close to the edges of the screen. Here, the resistive touchscreen does not perform as accurately. This would cause the calibration results to be unreliable. For my screen setup, keeping a margin of roughly 15% worked well.
+
+- The delay before start of the calibration in milliseconds (default is 1000). Set the option to 0 to start immediately. (`LV_TC_START_DELAY_MS`)
 
 - The timeout for automatically restarting the calibration in seconds (default is 30). Set the option to 0 to not have the calibration time out. (`LV_TC_RECALIB_TIMEOUT_S`)
 

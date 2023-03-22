@@ -27,7 +27,13 @@ extern "C" {
 #define LV_TC_SCREEN_DEFAULT_POINTS             {{80, 150}, {350, 400}, {720, 80}}
 
 
-//Make the system restart the calibration automatically after a given timeout
+//Prevent user input immediately after the calibration is started by adding a delay (in milliseconds)
+//When the process was started by pressing the screen, this makes sure that
+//this press is not falsely registered as the first calibration point
+//Set to 0 to disable
+#define LV_TC_START_DELAY_MS                    1000
+
+//Make the system restart the calibration automatically after a given timeout (in seconds)
 //if it is not accepted by the user. This makes sure that a faulty calibration can
 //always be restarted - even when it is impossible to press the 'recalibrate' button
 //Set to 0 to disable
