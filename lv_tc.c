@@ -123,13 +123,13 @@ lv_point_t _lv_tc_transform_point_indev(lv_indev_data_t *data) {
 }
 
 lv_point_t lv_tc_transform_point(lv_point_t point) {
-    lv_point_t tranformedPoint = point;
+    lv_point_t transformedPoint = point;
     if(calibResult.isValid) {
-        tranformedPoint.x = roundf((lv_tc_val_t)point.x * calibResult.a + (lv_tc_val_t)point.y * calibResult.b + calibResult.c);
-        tranformedPoint.y = roundf((lv_tc_val_t)point.x * calibResult.d + (lv_tc_val_t)point.y * calibResult.e + calibResult.f);
+        transformedPoint.x = roundf((lv_tc_val_t)point.x * calibResult.a + (lv_tc_val_t)point.y * calibResult.b + calibResult.c);
+        transformedPoint.y = roundf((lv_tc_val_t)point.x * calibResult.d + (lv_tc_val_t)point.y * calibResult.e + calibResult.f);
     }
     
-    return tranformedPoint;
+    return transformedPoint;
 }
 
 
