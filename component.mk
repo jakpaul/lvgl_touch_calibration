@@ -1,0 +1,4 @@
+# Define sources and include dirs
+COMPONENT_SRCDIRS := . img
+COMPONENT_ADD_INCLUDEDIRS := .
+COMPONENT_ADD_INCLUDEDIRS += img
