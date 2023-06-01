@@ -5,7 +5,12 @@
 #include "lv_tc.h"
 
 #include "math.h"
+#include "esp_log.h"
 
+/**********************
+ *      DEFINES
+ *********************/
+#define TAG "lv_tc"
 
 /**********************
  *  STATIC PROTOTYPES
@@ -125,6 +130,9 @@ void lv_tc_compute_coeff(lv_point_t *scrP, lv_point_t *tchP, bool save) {   //Th
     };
 
     lv_tc_set_coeff(result, save);
+
+    ESP_LOGI(TAG, "touch calibration coefficients -> [a: %f, b: %f, c: %f, d: %f, e: %f, f: %f]", result.a, result.b,
+             result.c, result.d, result.e, result.f);
 }
 
 lv_point_t _lv_tc_transform_point_indev(lv_indev_data_t *data) {
@@ -143,7 +151,7 @@ lv_point_t lv_tc_transform_point(lv_point_t point) {
         transformedPoint.x = roundf((lv_tc_val_t)point.x * calibResult.a + (lv_tc_val_t)point.y * calibResult.b + calibResult.c);
         transformedPoint.y = roundf((lv_tc_val_t)point.x * calibResult.d + (lv_tc_val_t)point.y * calibResult.e + calibResult.f);
     }
-    
+
     return transformedPoint;
 }
 
