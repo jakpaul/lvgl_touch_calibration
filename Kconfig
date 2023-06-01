@@ -92,4 +92,51 @@ menu "LVGL Touch Calibration"
             default 80
         endmenu
     endmenu
+
+    menu "Calibration Data"
+        config USE_CUSTOM_LV_TC_COEFFICIENTS
+        bool "Use custom calibration coefficients"
+        default n
+        help
+            Use coefficients from a previous calibration
+        menu "Calibration Coefficients"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_A
+            string "Value of touch calibration coefficient A"
+            default "0.00"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_B
+            string "Value of touch calibration coefficient B"
+            default "0.00"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_C
+            string "Value of touch calibration coefficient C"
+            default "0.00"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_D
+            string "Value of touch calibration coefficient D"
+            default "0.00"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_E
+            string "Value of touch calibration coefficient E"
+            default "0.00"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_F
+            string "Value of touch calibration coefficient F"
+            default "0.00"
+        endmenu
+
+        menu "NVS Storage"
+            depends on !USE_CUSTOM_LV_TC_COEFFICIENTS
+            config ESP_NVS_TC_PARTITION
+            string "NVS Partition name to use for touch calibration data"
+            default "nvs"
+            config ESP_NVS_TC_NAMESPACE
+            string "NVS Namespace name for touch calibration data"
+            default "lv_tc_data"
+            config ESP_NVS_TC_KEY
+            string "NVS Key name for touch calibration data"
+            default "lv_tc_coeff"
+        endmenu
+    endmenu
 endmenu

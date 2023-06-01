@@ -57,6 +57,21 @@ void lv_tc_set_coeff(lv_tc_coeff_t coeff, bool save) {
     }
 }
 
+#if defined CONFIG_USE_CUSTOM_LV_TC_COEFFICIENTS
+void lv_tc_load_coeff_from_config() {
+    lv_tc_coeff_t coeff = {
+            true,
+            atoff(CONFIG_LV_TC_COEFFICIENT_A),
+            atoff(CONFIG_LV_TC_COEFFICIENT_B),
+            atoff(CONFIG_LV_TC_COEFFICIENT_C),
+            atoff(CONFIG_LV_TC_COEFFICIENT_D),
+            atoff(CONFIG_LV_TC_COEFFICIENT_E),
+            atoff(CONFIG_LV_TC_COEFFICIENT_F)
+    };
+    lv_tc_set_coeff(coeff, false);
+}
+#endif
+
 void lv_tc_save_coeff() {
     if(registeredSaveCb) {
         registeredSaveCb(calibResult);
