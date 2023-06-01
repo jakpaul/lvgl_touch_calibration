@@ -1,6 +1,10 @@
 menu "LVGL Touch Calibration"
+    config USE_LV_TOUCH_CALIBRATION
+    bool "Enable to use LVGL Touch Calibration"
+    default y
 
     menu "UI Text Overrides"
+        depends on USE_LV_TOUCH_CALIBRATION
         config USE_CUSTOM_LV_TC_START_MSG
             bool "Use custom LV_TC_START_MSG"
         config LV_TC_START_MSG
@@ -31,6 +35,7 @@ menu "LVGL Touch Calibration"
     endmenu
 
     menu "Calibration Timeouts"
+        depends on USE_LV_TOUCH_CALIBRATION
         config LV_TC_START_DELAY_MS
             int "Calibration start delay (milliseconds)"
             default 1000
@@ -50,6 +55,7 @@ menu "LVGL Touch Calibration"
     endmenu
 
     menu "Calibration Points"
+        depends on USE_LV_TOUCH_CALIBRATION
         config USE_CUSTOM_LV_TC_SCREEN_POINTS
         bool "Use custom touch calibration points"
         default n
@@ -94,6 +100,7 @@ menu "LVGL Touch Calibration"
     endmenu
 
     menu "Calibration Data"
+        depends on USE_LV_TOUCH_CALIBRATION
         config USE_CUSTOM_LV_TC_COEFFICIENTS
         bool "Use custom calibration coefficients"
         default n
