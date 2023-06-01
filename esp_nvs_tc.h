@@ -52,6 +52,12 @@ extern "C" {
 bool esp_nvs_tc_coeff_init();
 
 /**
+ * Initialize the ESP's non-volatile storage and delete the stored calibration coefficients.
+ * @returns true if coefficients were deleted from the NVS, else false
+ */
+bool esp_nvs_tc_coeff_erase();
+
+/**
  * The default callback for writing the calibartion coefficients to nvs.
  * @param coeff the coefficients to save (lv_tc_coeff_t)
  */

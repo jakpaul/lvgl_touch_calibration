@@ -32,6 +32,21 @@ bool esp_nvs_tc_coeff_init() {
     }
 }
 
+bool esp_nvs_tc_coeff_erase() {
+    ESP_ERROR_CHECK(nvs_flash_init_partition(ESP_NVS_TC_PARTITION));
+
+    nvs_handle_t nVSHandle;
+    ESP_ERROR_CHECK(nvs_open_from_partition(ESP_NVS_TC_PARTITION, ESP_NVS_TC_NAMESPACE, NVS_READWRITE, &nVSHandle));
+    esp_err_t err = nvs_erase_key(nVSHandle, ESP_NVS_TC_KEY);
+    nvs_close(nVSHandle);
+
+    if(err == ESP_OK) {
+        return true;
+    }
+
+    return true;
+}
+
 void esp_nvs_tc_coeff_save_cb(lv_tc_coeff_t coeff) {
     nvs_handle_t nVSHandle;
 
