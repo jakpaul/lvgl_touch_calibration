@@ -1,0 +1,149 @@
+menu "LVGL Touch Calibration"
+    config USE_LV_TOUCH_CALIBRATION
+    bool "Enable to use LVGL Touch Calibration"
+    default y
+
+    menu "UI Text Overrides"
+        depends on USE_LV_TOUCH_CALIBRATION
+        config USE_CUSTOM_LV_TC_START_MSG
+            bool "Use custom LV_TC_START_MSG"
+        config LV_TC_START_MSG
+            depends on USE_CUSTOM_LV_TC_START_MSG
+            string "Message to display on screen prior to touch calibration"
+            default "Precisely touch the cursors (using a touch pen) to perform the calibration."
+
+        config USE_CUSTOM_LV_TC_READY_MSG
+            bool "Use custom LV_TC_READY_MSG"
+        config LV_TC_READY_MSG
+            depends on USE_CUSTOM_LV_TC_READY_MSG
+            string "Message to display on after touch calibration"
+            default "Calibration completed. You can check it by moving the cursor around on the screen."
+
+        config USE_CUSTOM_LV_TC_RECALIBRATE_TXT
+            bool "Use custom LV_TC_RECALIBRATE_TXT"
+        config LV_TC_RECALIBRATE_TXT
+            depends on USE_CUSTOM_LV_TC_RECALIBRATE_TXT
+            string "Recalibrate button text"
+            default "Recalibrate"
+
+        config USE_CUSTOM_LV_TC_ACCEPT_TXT
+            bool "Use custom LV_TC_ACCEPT_TXT"
+        config LV_TC_ACCEPT_TXT
+            depends on USE_CUSTOM_LV_TC_ACCEPT_TXT
+            string "Accept button text"
+            default "Accept"
+    endmenu
+
+    menu "Calibration Timeouts"
+        depends on USE_LV_TOUCH_CALIBRATION
+        config LV_TC_START_DELAY_MS
+            int "Calibration start delay (milliseconds)"
+            default 1000
+            help
+                Prevent user input immediately after the calibration is started by adding a delay (in milliseconds)
+                When the process was started by pressing the screen, this makes sure that
+                this press is not falsely registered as the first calibration point
+                Set to 0 to disable
+        config LV_TC_RECALIB_TIMEOUT_S
+            int "Re-calibration timeout (seconds)"
+            default 30
+            help
+                Make the system restart the calibration automatically after a given timeout (in seconds)
+                if it is not accepted by the user. This makes sure that a faulty calibration can
+                always be restarted - even when it is impossible to press the 'recalibrate' button
+                Set to 0 to disable
+    endmenu
+
+    menu "Calibration Points"
+        depends on USE_LV_TOUCH_CALIBRATION
+        config USE_CUSTOM_LV_TC_SCREEN_POINTS
+        bool "Use custom touch calibration points"
+        default n
+        help
+            Enable to specify 3 custom calibration points, if not the points are chosen automatically based
+            on your screen resolution.
+            Note on custom points:
+            + Must not be on a straight line. If the points do not form a triangle, the calibration will not work.
+            + Ideally cover the largest possible area on the screen. This minimizes any error in the calibration process.
+            + Must not be too close to the edges of the screen.
+              Otherwise the resistive touchscreen does not perform as accurately and cause the calibration results to
+              be unreliable.
+        menu "Calibration Point 1"
+            depends on USE_CUSTOM_LV_TC_SCREEN_POINTS
+            config LV_TC_SCREEN_POINT_1_X
+            int "Specify X coordinate of the first touch calibration point"
+            default 80
+            config LV_TC_SCREEN_POINT_1_Y
+            int "Specify Y coordinate of the first touch calibration point"
+            default 150
+        endmenu
+
+        menu "Calibration Point 2"
+            depends on USE_CUSTOM_LV_TC_SCREEN_POINTS
+            config LV_TC_SCREEN_POINT_2_X
+            int "Specify X coordinate of the second touch calibration point"
+            default 350
+            config LV_TC_SCREEN_POINT_2_Y
+            int "Specify Y coordinate of the second touch calibration point"
+            default 400
+        endmenu
+
+        menu "Calibration Point 3"
+            depends on USE_CUSTOM_LV_TC_SCREEN_POINTS
+            config LV_TC_SCREEN_POINT_3_X
+            int "Specify X coordinate of the third touch calibration point"
+            default 720
+            config LV_TC_SCREEN_POINT_3_Y
+            int "Specify Y coordinate of the third touch calibration point"
+            default 80
+        endmenu
+    endmenu
+
+    menu "Calibration Data"
+        depends on USE_LV_TOUCH_CALIBRATION
+        config USE_CUSTOM_LV_TC_COEFFICIENTS
+        bool "Use custom calibration coefficients"
+        default n
+        help
+            Use coefficients from a previous calibration
+        menu "Calibration Coefficients"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_A
+            string "Value of touch calibration coefficient A"
+            default "0.00"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_B
+            string "Value of touch calibration coefficient B"
+            default "0.00"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_C
+            string "Value of touch calibration coefficient C"
+            default "0.00"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_D
+            string "Value of touch calibration coefficient D"
+            default "0.00"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_E
+            string "Value of touch calibration coefficient E"
+            default "0.00"
+            depends on USE_CUSTOM_LV_TC_COEFFICIENTS
+            config LV_TC_COEFFICIENT_F
+            string "Value of touch calibration coefficient F"
+            default "0.00"
+        endmenu
+
+        menu "NVS Storage"
+            depends on !USE_CUSTOM_LV_TC_COEFFICIENTS
+            config ESP_NVS_TC_PARTITION
+            string "NVS Partition name to use for touch calibration data"
+            default "nvs"
+            config ESP_NVS_TC_NAMESPACE
+            string "NVS Namespace name for touch calibration data"
+            default "lv_tc_data"
+            config ESP_NVS_TC_KEY
+            string "NVS Key name for touch calibration data"
+            default "lv_tc_coeff"
+        endmenu
+    endmenu
+endmenu

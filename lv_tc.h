@@ -72,6 +72,13 @@ lv_tc_coeff_t* lv_tc_get_coeff();
 void lv_tc_set_coeff(lv_tc_coeff_t coeff, bool save);
 
 /**
+ * Load previously calibrated coefficient data if defined in the config
+ */
+#if defined CONFIG_USE_CUSTOM_LV_TC_COEFFICIENTS
+void lv_tc_load_coeff_from_config();
+#endif
+
+/**
  * Save the current calibration coefficients.
  */
 void lv_tc_save_coeff();
