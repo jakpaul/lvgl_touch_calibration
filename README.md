@@ -1,14 +1,15 @@
 # Resistive Touch Panel Calibration System for LVGL
 
 This repository aims to provide a simple, ready-to-embed component for performing calibration of a resistive touch panel in an [LVGL](https://lvgl.io/) project.
+It can be used as an ESP-IDF component (thanks to [@hiruna](https://github.com/hiruna)) but is also compatible with other platforms.
 
 ### Features
 - Corrects for **panel misalignment, scale and rotation**. This means that, as long as the touch controller is working properly, its output range does not matter; no dialing numbers in by hand for prescaling is required.
 - Simple integration: Just a couple of callbacks need to be defined to interface with the calibration component. It handles all the transformation math.
 - Lets the user verify the calibration by showing the touch position after a completed calibration.
 - Recalibration after a timeout: The process always restarts after some given timeout if the results are not accepted. This prevents the device from no longer being controllable via the touchscreen if the user misclicks - since this would result in a faulty calibration.
-- **New feature:** Previously, when the calibration was started through touch input, the press would sometimes falsely be registered as the first calibration point. A delay before start of the sequence prevents this.
-- Configurable (see below)
+- With previous versions, when the calibration was started through touch input, the press would sometimes falsely be registered as the first calibration point. A delay before start of the sequence prevents this.
+- Configurable (see below). Options are available through ESP-IDF menuconfig or editing the [config file](./lv_tc_config.h).
 
 ### Possible future improvements
 - Allow setting other calibration modes such as: more points for better accuracy (through averaging)
@@ -195,7 +196,7 @@ void init() {
 ```
 
 ### Configuration
-A couple of configuration options for the system are available in `lv_tc_config.h`:
+A couple of configuration options for the system are available in [lv_tc_config.h](./lv_tc_config.h) or via ESP-IDF menuconfig:
 - The text on the UI. (`LV_TC_START_MSG`, `LV_TC_READY_MSG`, `LV_TC_RECALIBRATE_TXT`, `LV_TC_ACCEPT_TXT`, `LV_TC_RECALIBRATE_TIMEOUT_FORMAT`)
 
 - The positions of the points on the screen that are to be pressed during calibration. 
