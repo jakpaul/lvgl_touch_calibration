@@ -5,7 +5,10 @@
 #include "lv_tc.h"
 
 #include "math.h"
-#include "esp_log.h"
+
+#ifdef ESP_PLATFORM
+    #include "esp_log.h"
+#endif
 
 /**********************
  *      DEFINES
@@ -131,8 +134,10 @@ void lv_tc_compute_coeff(lv_point_t *scrP, lv_point_t *tchP, bool save) {   //Th
 
     lv_tc_set_coeff(result, save);
 
-    ESP_LOGI(TAG, "touch calibration coefficients -> [a: %f, b: %f, c: %f, d: %f, e: %f, f: %f]", result.a, result.b,
-             result.c, result.d, result.e, result.f);
+    #ifdef ESP_PLATFORM
+        ESP_LOGI(TAG, "touch calibration coefficients -> [a: %f, b: %f, c: %f, d: %f, e: %f, f: %f]", result.a, result.b,
+                result.c, result.d, result.e, result.f);
+    #endif
 }
 
 lv_point_t _lv_tc_transform_point_indev(lv_indev_data_t *data) {
