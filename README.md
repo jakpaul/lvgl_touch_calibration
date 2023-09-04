@@ -14,7 +14,7 @@ It can be used as an ESP-IDF component (thanks to [@hiruna](https://github.com/h
 ### Possible future improvements
 - Allow setting other calibration modes such as: more points for better accuracy (through averaging)
 
-The system has been tested to work reliably with LVGL 8.3.0 on a 480×800 pixels LCD with an XPT2046 touch controller.
+The system has been tested to work reliably with LVGL 8.3.9 on a 480×800 pixels LCD with an XPT2046 touch controller.
 
 ![Calibration screen preview](./preview.gif)
 
