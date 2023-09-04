@@ -44,7 +44,7 @@ bool esp_nvs_tc_coeff_erase() {
         return true;
     }
 
-    return true;
+    return false;
 }
 
 void esp_nvs_tc_coeff_save_cb(lv_tc_coeff_t coeff) {
