@@ -35,14 +35,17 @@ typedef struct {
  **********************/
 
 /**
- * Initialize a calibrated touch input driver.
- * @param indevDrv pointer to an input driver
- * @param readCb function pointer to read input driver data
+ * Initialize a calibrated touch input device.
+ * As of LVGL version 9.0 the device setup is done outside this function.
+ * It expects a read callback already set.
+ * Also uses its user data field. DO NOT OVERRIDE
+ * @param indev pointer to an input device
  */
-void lv_tc_indev_drv_init(lv_indev_drv_t *indevDrv, void (*readCb)(struct _lv_indev_drv_t *indevDrv, lv_indev_data_t *data));
+void lv_tc_indev_init(lv_indev_t *indev);
+
 
 /**
- * Register a calibration screen to the modified input driver.
+ * Register a calibration screen to the modified input device.
  * NOT TO BE CALLED IN APPLICATION CODE
  * @param screenObj pointer to the screen object
  * @param inputCb function pointer to handle the input
