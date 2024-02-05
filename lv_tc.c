@@ -19,7 +19,7 @@
  *  STATIC PROTOTYPES
  **********************/
 
-static void lv_tc_indev_drv_read_cb(lv_indev_drv_t *indevDrv, lv_indev_data_t *data);
+static void lv_tc_indev_read_cb(lv_indev_t *indev, lv_indev_data_t *data);
 
 
 /**********************
@@ -37,11 +37,9 @@ static void (*registeredSaveCb)(lv_tc_coeff_t coeff) = NULL;
  *   GLOBAL FUNCTIONS
  **********************/
 
-void lv_tc_indev_drv_init(lv_indev_drv_t *indevDrv, void (*readCb)(lv_indev_drv_t *indevDrv, lv_indev_data_t *data)) {
-    lv_indev_drv_init(indevDrv);
-    indevDrv->type = LV_INDEV_TYPE_POINTER;
-    indevDrv->read_cb = lv_tc_indev_drv_read_cb;
-    indevDrv->user_data = readCb;
+void lv_tc_indev_init(lv_indev_t *indev) {
+    lv_indev_set_user_data(indev, (void*)lv_indev_get_read_cb(indev));
+    lv_indev_set_read_cb(indev, lv_tc_indev_read_cb);
 }
 
 void _lv_tc_register_input_cb(lv_obj_t *screenObj, bool (*inputCb)(lv_obj_t *screenObj, lv_indev_data_t *data)) {
@@ -165,11 +163,11 @@ lv_point_t lv_tc_transform_point(lv_point_t point) {
  *   STATIC FUNCTIONS
  **********************/
 
-static void lv_tc_indev_drv_read_cb(lv_indev_drv_t *indevDrv, lv_indev_data_t *data) {
-    if(!indevDrv->user_data) return;
+static void lv_tc_indev_read_cb(lv_indev_t *indev, lv_indev_data_t *data) {
+    if(!lv_indev_get_user_data(indev)) return;
 
     //Call the actual indev read callback
-    ((void (*)(lv_indev_drv_t*, lv_indev_data_t*))indevDrv->user_data)(indevDrv, data);
+    ((void (*)(lv_indev_t*, lv_indev_data_t*))lv_indev_get_user_data(indev))(indev, data);
 
     //Pass the results to an ongoing calibration if there is one
     if(registeredTCScreen && registeredInputCb && registeredTCScreen == lv_scr_act()) {

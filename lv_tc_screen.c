@@ -132,10 +132,12 @@ static void lv_tc_screen_constructor(const lv_obj_class_t *class_p, lv_obj_t *ob
     lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
 
 
-    LV_IMG_DECLARE(lv_tc_indicator_img);
+    LV_IMAGE_DECLARE(lv_tc_indicator_img);
 
-    tCScreenObj->indicatorObj = lv_img_create(obj);
-    lv_img_set_src(tCScreenObj->indicatorObj, &lv_tc_indicator_img);
+    tCScreenObj->indicatorObj = lv_image_create(obj);
+    lv_image_set_src(tCScreenObj->indicatorObj, &lv_tc_indicator_img);
+    lv_obj_set_style_image_recolor_opa(tCScreenObj->indicatorObj, LV_OPA_COVER, 0);
+    lv_obj_set_style_image_recolor(tCScreenObj->indicatorObj, lv_color_black(), 0);
     lv_obj_clear_flag(tCScreenObj->indicatorObj, LV_OBJ_FLAG_CLICKABLE);
 
 
@@ -168,14 +170,17 @@ static void lv_tc_screen_constructor(const lv_obj_class_t *class_p, lv_obj_t *ob
 
 static void lv_tc_screen_auto_set_points(lv_obj_t *screenObj) {
     //Choose the on-screen calibration points based on the active display driver's resolution
-    lv_coord_t marginH = lv_disp_get_default()->driver->hor_res * 0.15;
-    lv_coord_t marginV = lv_disp_get_default()->driver->ver_res * 0.15;
-    lv_coord_t margin = (marginH < marginV) ? marginH: marginV;
+    int32_t horRes = lv_display_get_horizontal_resolution(lv_display_get_default());
+    int32_t verRes = lv_display_get_vertical_resolution(lv_display_get_default());
+    
+    int32_t marginH = horRes * 0.15;
+    int32_t marginV = verRes * 0.15;
+    int32_t margin = (marginH < marginV) ? marginH: marginV;
 
     lv_point_t points[3] = {
-        {       margin                                         , (float)lv_disp_get_default()->driver->ver_res * 0.3   },
-        {(float)lv_disp_get_default()->driver->hor_res * 0.4   ,        lv_disp_get_default()->driver->ver_res - margin},
-        {       lv_disp_get_default()->driver->hor_res - margin,        margin                                         }
+        {       margin         , (float)verRes * 0.3   },
+        {(float)horRes * 0.4   ,        verRes - margin},
+        {       horRes - margin,        margin         }
     };
     lv_tc_screen_set_points(screenObj, points);
 }
