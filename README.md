@@ -3,20 +3,23 @@
 This repository aims to provide a simple, ready-to-embed component for performing calibration of a resistive touch panel in an [LVGL](https://lvgl.io/) project.
 It can be used as an ESP-IDF component (thanks to [@hiruna](https://github.com/hiruna)) but is also compatible with other platforms.
 
+![Calibration screen preview](./preview.gif)
+
 ### Features
 - Corrects for **panel misalignment, scale and rotation**. This means that, as long as the touch controller is working properly, its output range does not matter; no dialing numbers in by hand for prescaling is required.
 - Simple integration: Just a couple of callbacks need to be defined to interface with the calibration component. It handles all the transformation math.
 - Lets the user verify the calibration by showing the touch position after a completed calibration.
 - Recalibration after a timeout: The process always restarts after some given timeout if the results are not accepted. This prevents the device from no longer being controllable via the touchscreen if the user misclicks - since this would result in a faulty calibration.
-- With previous versions, when the calibration was started through touch input, the press would sometimes falsely be registered as the first calibration point. A delay before start of the sequence prevents this.
+- When the calibration is started through touch input, the press might sometimes falsely be registered as the first calibration point. A delay before start of the sequence prevents this.
 - Configurable (see below). Options are available through ESP-IDF menuconfig or editing the [config file](./lv_tc_config.h).
+
+### Compatibility
+The system has been tested to work reliably with LVGL 9.0.0 on a 480×800 pixels LCD with an XPT2046 touch controller.
+For previous versions of LVGL see the [releases](https://github.com/jakpaul/lvgl_touch_calibration/releases) page.
 
 ### Possible future improvements
 - Allow setting other calibration modes such as: more points for better accuracy (through averaging)
 
-The system has been tested to work reliably with LVGL 8.3.9 on a 480×800 pixels LCD with an XPT2046 touch controller.
-
-![Calibration screen preview](./preview.gif)
 
 ## Calibration Sequence
 When the `lv_tc_screen` has been loaded and `lv_tc_screen_start(...)` is called, the user is prompted to touch the screen in three different locations, one by one. Once this is done, the system allows the user to check the calibration results (by showing a cursor at any position the user presses). The calibration is then either restarted or accepted.
@@ -28,7 +31,7 @@ This repo contains some examplary functions for the ESP32 (on top of the [ESP32 
 ## Usage
 Clone this this repo and place all its contents in your project.
 ### Firmware setup
-This section documents how to add touch calibration to an LVGL project: The system provides a custom input device driver for lvgl (see below). Note that you have to **replace** your own driver if there already is one in your code.
+This section documents how to add touch calibration to an LVGL project: The system modifies an existing input device (see below). It acts as a conversion layer between the uncalibrated input device and LVGL. As the system makes use of the user data field of the device, you will not be able to use it. So keep that in mind when integrating into an existing application.
 
 Place this code in your LVGL initialization:
 ```c
@@ -40,21 +43,18 @@ Place this code in your LVGL initialization:
 void init() {
     //...
 
-    static lv_indev_drv_t indevDrv;
+    /*
+        Create and set up the input device
+    */
+    lv_indev_t *indev = lv_indev_create();
+    lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+    lv_indev_set_read_cb(indev, your_indev_read_cb);
 
     /*
-        Initialize the calibrated touch driver.
-        Sets its type to LV_INDEV_TYPE_POINTER,
-        uses its user_data field. DO NOT OVERRIDE
-
-        Also provide a read callback to interface with your touch controller!
+        Initialize the calibrated touch device.
+        Uses its user_data field. DO NOT OVERRIDE
     */
-    lv_tc_indev_drv_init(&indevDrv, your_indev_read_cb);
-
-    /*
-        Register the driver.
-    */
-    lv_indev_drv_register(&indevDrv);
+    lv_tc_indev_init(indev);
 
     /*
         If using NVS:
@@ -100,10 +100,10 @@ void init() {
 The functions above (that you have to implement yourself) have the following signatures:
 ```c
 /*
-    Your touch panel driver read callback
+    Your touch panel input device read callback
 */
 void your_indev_read_cb(
-        lv_indev_drv_t *indevDriver,
+        lv_indev_t *indev,
         lv_indev_data_t *indevData
     ) {
     
