@@ -282,7 +282,7 @@ static void lv_tc_screen_ready(lv_obj_t *screenObj) {
     }
 
     //Indicate that the calibration is complete and the screen can be closed
-    lv_event_send(screenObj, LV_EVENT_READY, lv_tc_get_coeff());
+    lv_obj_send_event(screenObj, LV_EVENT_READY, lv_tc_get_coeff());
 }
 
 
