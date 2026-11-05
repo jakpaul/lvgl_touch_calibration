@@ -9,7 +9,8 @@ extern "C" {
  *      INCLUDES
  *********************/
 
-#include "stdbool.h"
+#include <stdbool.h>
+
 #include "lv_tc.h"
 
 #ifdef ESP_PLATFORM

@@ -4,16 +4,11 @@
 
 #include "lv_tc.h"
 
-#include "math.h"
+#include <math.h>
 
 #ifdef ESP_PLATFORM
     #include "esp_log.h"
 #endif
-
-/**********************
- *      DEFINES
- *********************/
-#define TAG "lv_tc"
 
 /**********************
  *  STATIC PROTOTYPES
@@ -31,6 +26,8 @@ static lv_tc_coeff_t calibResult = {false, 0, 0, 0, 0, 0, 0};
 static lv_obj_t *registeredTCScreen = NULL;
 static bool (*registeredInputCb)(lv_obj_t *screenObj, lv_indev_data_t *data) = NULL;
 static void (*registeredSaveCb)(lv_tc_coeff_t coeff) = NULL;
+
+static const char *TAG = "lv_tc";
 
 
 /**********************

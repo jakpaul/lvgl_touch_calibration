@@ -8,7 +8,8 @@ extern "C" {
  *      INCLUDES
  *********************/
 
-#include "stdbool.h"
+#include <stdbool.h>
+
 #include "lvgl.h"
 
 

@@ -8,10 +8,15 @@ extern "C" {
  *      INCLUDES
  *********************/
 
-#include "stdbool.h"
+#include <stdbool.h>
 
 #include "lvgl.h"
 
+#if LVGL_VERSION_MAJOR == 9 && LVGL_VERSION_MINOR >= 2
+#include "lvgl/src/lvgl_private.h"
+#endif
+
+#include "lvgl/src/lv_conf_internal.h"
 
 /**********************
  *      TYPEDEFS
@@ -37,7 +42,7 @@ typedef struct {
     lv_timer_t *recalibrateTimer;   /* The timer for automatic recalibration */
 } lv_tc_screen_t;
 
-extern const lv_obj_class_t lv_tc_screen_class;
+LV_ATTRIBUTE_EXTERN_DATA extern const lv_obj_class_t lv_tc_screen_class;
 
 
 /**********************
